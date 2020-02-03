@@ -13,18 +13,17 @@
 #folderContainer{
     -fx-padding: 10px;
 }
-
-#rootFolderName{
-    -fx-background-color: #36393F;
-    -fx-text-fill: #F26522;
-}
-
 .button{
     -fx-background-color: #36393F;
     -fx-text-fill: white;
     -fx-margin: 10px 10px 10px 10px;
     -fx-padding: 0px 05px 0px 05px;
     /* Top, Right, Bottom, Left*/
+}
+
+TextField{
+    -fx-background-color: #36393F;
+    -fx-text-fill: #F26522;
 }
 
 .label{

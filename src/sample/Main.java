@@ -1,22 +1,19 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import sample.src.Folder;
 
-import java.awt.*;
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class Main extends Application {
     public List<String> getDirectory(String dirPath){
@@ -103,9 +100,18 @@ public class Main extends Application {
         _sidebar.getChildren().addAll(backButton);
     }
 
-    public void createNewFolder(VBox _mainWindow, int level){
-        
+    public void rescaleWidth(Stage primaryStage, VBox sidebar, double height, double width){
+        double currentWidth = primaryStage.getWidth();
+
+        // Rescale the Window
+        double newHeight = (currentWidth*height)/width;
+        primaryStage.setHeight(newHeight);
+
+        // Rescale the sidebar
+        sidebar.setMinSize(currentWidth*0.2, newHeight);
+        sidebar.setMaxSize(currentWidth*0.2, newHeight);
     }
+
     @Override
     public void start(Stage primaryStage){
         double width = 800;
@@ -137,29 +143,20 @@ public class Main extends Application {
 
         // Add listener for resizing.
         primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> {
-            double currentWidth = primaryStage.getWidth();
-
-            // Rescale the Window
-            double newHeight = (currentWidth*height)/width;
-            primaryStage.setHeight(newHeight);
-
-            // Rescale the sidebar
-            sidebar.setMinSize(currentWidth*0.2, newHeight);
-            sidebar.setMaxSize(currentWidth*0.2, newHeight);
+            rescaleWidth(primaryStage, sidebar, height, width);
         });
 
-        // Configure the main window
-        TextField t = new TextField();
-        HBox h = new HBox(t);
-        mainWindow.getChildren().addAll(h);
-        t.setId("rootFolderName");
-        h.setId("folderContainer");
+        // Configure the main window by adding a 'folder'
+        Folder rootFolder = new Folder(0, mainWindow, 0);
+        rootFolder.setReference(rootFolder);
 
-        // Logic for TextField Mechanics
-        t.setOnAction(e -> {
-            System.out.println("Enter pressed in the textfield;");
-
+        TextField tf = rootFolder.getTextField();
+        tf.setOnAction(e->{
+            Integer freeID = Folder.getFreeID();
+            Folder newFolder = new Folder(freeID, mainWindow, rootFolder.getLevel() + 1);
+            newFolder.getTextField().requestFocus();
         });
+
 
         // Render
         Scene scene = new Scene(root, width, height);
